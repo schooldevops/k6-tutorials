@@ -33,8 +33,8 @@ ulimit -n 250000
 ```
 
 - net.ipv4.tcp_tw_reuse: 네트워크 커넥션을 재사용 할 수 있도록 지정한다. 
-- net.ipv4.tcp_timestamps: 그리고 네트워크 커넥션의 최대 접속수 제한을 증가 시킨다. 
-- net.ipv4.ip_local_port_range: 그리고 로클 포트의 범위를 향상 시킨다. 
+- net.ipv4.tcp_timestamps: - net.ipv4.tcp_timestamps: 대규모 네트워크 처리시 패킷의 순서를 타임스탬프로 사용한다. 이렇게 하면 네트워크 패킷 시퀀스의 중복 발생을 제거할 수 있어 대규모 처리에 문제없이 수행된다.
+- net.ipv4.ip_local_port_range: 그리고 로컬 포트의 범위를 향상 시킨다. 
 
 <br/>
 
@@ -366,7 +366,7 @@ k6 run scripts/website.es5.js \
 
 #### > AWS m5.24xlarge
 
-- m5.24xlarge 는 384GB으 램, 96 CPU 코어를 가진다. 
+- m5.24xlarge 는 384GB의 램, 96 CPU 코어를 가진다. 
 - 노트: 슬립은 5초에서 1초로 줄였다. 더 많은 리퀘스트를 만들어 내기 위해 작업했다. 
 
 ```go
