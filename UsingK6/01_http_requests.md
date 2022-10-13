@@ -1,19 +1,27 @@
 # HTTP Request 사용하기 
 
-- 새로운 로드 테스트를 할때 우선 테스트하고자 하는 대상의 HTTP 요청을 먼저 정의해야한다. 
+- 로드 테스트를 할때 우선 테스트하고자 하는 대상의 HTTP 요청을 먼저 정의해야한다. 
+- k6는 http 모듈을 제공하며 이는 built in 모듈이며, http 요청(get, post, put, delete 등) 을 보낼 수 있는 기능을 제공한다.
 
 ## HTTP Request 작성하기
 
-- 아래는 단순 GET 버젼이다. 
+### GET 요청하기 
+
+- 아래는 단순 GET 을 이용하여 요청을 보낸다. 
 - 02_01_http_rquest_01.js 파일을 생성하고 
 
 ```js
 import http from 'k6/http';
 
 export default function() {
-  http.get('http://test.k6.io');
+  var response = http.get('http://test.k6.io');
 }
 ```
+
+- http.get('url'); 을 이용하여 get 요청을 url로 전송한다. 
+- 요청 결과를 response 에 저장한다. 
+
+### POST 요청하기 
 
 - 다음은 POST 요청을 해보자. 
 
@@ -38,6 +46,10 @@ export default function () {
 
 ```
 
+- http.post 메소드를 이용하여 post 요청을 보낸다. 
+- 이때 요청을 보내기 위해서 url, 전송데이터(payload), 헤더 및 파라미터(params) 를 매개변수로 전달할 수 있다. 
+- 데이터 전송시 json을 전송하기 위해서 params.headers 에 'Content-Type' 으로 'application/json' 을 전송하도록 설정하였다. 
+
 ## 가능한 메소드
 
 - http module 에서 다양한 HTTP 메소드를 제공한다. 
@@ -59,7 +71,7 @@ export default function () {
 ## HTTP Request Tag
 
 - k6는 자동적으로 HTTP request에 태그를 적용한다. 
-- 이 태그를 이용하여 결과에서 필터링을 하거나 분석시 사용할 수 있다. 
+- 이 태그를 이용하여 결과에서 필터링을 하거나 분석 시 사용할 수 있다. 
 
 |Name| description|
 |---|---|
@@ -71,7 +83,7 @@ export default function () {
 |status| 상태값을 응답한다.|
 |url| URL 요청 기본값이다.|
 
-- JSON 예제를 다음과 같이 볼수 있다. 테스트 결과가 어떻게 로깅되는지 확인할 수 있다. 
+- 실형결과는 다음과 같이 JSON으로 볼수 있다. 테스트 결과가 어떻게 로깅되는지 확인할 수 있다. 
 - 이 예제에서 지표는 HTTP 요청 기간이다.
 
 ```json
@@ -94,12 +106,19 @@ export default function () {
 }
 ```
 
-- 위와 같이 tags 하위 태그에 태그 내용들을 확인할 수 있다. 
+- 위와 같이 태그 내용들을 확인할 수 있다. 
+- expected_response: 기대한 응답 200으로 받았다는 것을 나타낸다. (true)
+- group: 지정되지 않아서 ""로 처리되었다. 
+- method: 요청한 메소드가 GET임을 나타낸다. 
+- name: 요청한 url 정보를 나타낸다. 
+- scenario: 시나리오를 지정하거나, 태깅을 하지 않았으므로 기본 default가 출력된다. 
+- status: 응답을 받은 상태 코드가 200임을 나타낸다. 
+- url: 요청 경로
 
 ## URL Grouping
 
-- 기본적으로 tags는 name 필드를 가진다. 이는 요청 URL의 값을 저장한다. 
-- 만약 테스트가 동적 URL 경로를 가진다면, 이 동작을 원하지 않을 수 있다. 이로 인해 많은 수의 고유 URL이 메트릭 스트림으로 가져올 수 있다. 
+- 테스트를 수행할 때 url 경로중 특정 PathVariable은 변경되지만, 동일한 엔드포인트로 요청을 수행하는 경우가 자주 발생한다. 
+- 만약 테스트가 동적 URL 경로를 가진다면 URL 그룹을 통해서 동적으로 요청할 수 있다.
 - 다음은 100개의 다른 URL을 호출한다. 
 
 ```js
@@ -138,6 +157,7 @@ $ k6 run 01_http_request_04.js --out json=result01.json
 ```
 
 - JSON 출력 결과는 다음과 같다. 
+- 요청한 내용 하나하나가 json으로 출력이 된다.
 
 ```json
 {
@@ -190,4 +210,4 @@ export default function () {
 
 ```
 
-from: https://k6.io/docs/using-k6/http-requests/
+ref: https://k6.io/docs/using-k6/http-requests/

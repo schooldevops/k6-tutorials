@@ -1,14 +1,14 @@
 # k6 Metrics
 
 - Metrics 는 테스트 상황에서 시스템이 어떻게 수행했는지를 측정하는 값이다. 
-- 기본적으로 k6는 자동적으로 내장 메트릭을 수집한다. 
-- 내장 메트릭 이외에도 커스텀 메트릭을 생성할 수 있다. 
+- 기본적으로 k6는 자동적으로 빌트인 메트릭을 수집한다. 
+- 빌트인 메트릭 이외에도 커스텀 메트릭을 생성할 수 있다. 
 
 - 메트릭타입은 4가지가 있다. 
-  - Counters 합계값
-  - Gauges 트랙은 최소/최대/마지막 값을 나타낸다.
-  - Rate 트랙은 얼마나 자주 0이 아닌 값(true)이 발생했는지 측정한다. 
-  - 복수 값에 대해 Trends 를 계산하여 통계값을 반환한다. 
+  - Counters: 합계값
+  - Gauges: 최소/최대/마지막 값등을 기록하기 위해 사용한다. 
+  - Rate: 얼마나 자주 0이 아닌 값(true)이 발생했는지 측정한다. 
+  - Trends: 복수 값에 대해 Trends 를 계산하여 통계값을 반환한다. 
 
 ## Built-in metrics
 
@@ -62,8 +62,8 @@ default ✓ [======================================] 1 VUs  00m03.8s/10m0s  1/1 
      vus_max........................: 1     min=1      max=1
 ```
 
-- 모든 출력된 메트릭은 http, iteration, vu 로 시작한다. 이들은 모두 내장 메트릭이다. 
-- k6는 항상 다음과 같은 내장 메트릭을 가진다. 
+- 모든 출력된 메트릭은 http, iteration, vu 로 시작한다. 이들은 모두 빌트인 메트릭이다. 
+- k6는 항상 다음과 같은 빌트인 메트릭을 가진다. 
 
 |METRIC| NAME|	TYPE|	DESCRIPTION|
 |---|---|---|---|
@@ -94,7 +94,7 @@ default ✓ [======================================] 1 VUs  00m03.8s/10m0s  1/1 
 
 ## 스크립트로 HTTP 접근 타이밍
 
-- 각기 개별 HTTP 요청으로 부터 타이밍 정보에 저장하기 위해서 Response.timings 객체를 제공하며, 다양한 단계에서 밀리초 단위로 소비된 시간을 제공한다. 
+- 각기 개별 HTTP 요청으로 부터 타이밍 정보에 저장하기 위해서 Response.timings 객체를 제공하며, 밀리초 단위로 소비된 시간을 제공한다. 
   - blocked:
     - http_req_blocked 와 동일
   - connecting:
@@ -121,6 +121,7 @@ export default function () {
 ```
 
 - 위 내용을 실행하고 나면 다음 결과를 확인할 수 있다. 
+- 결과 값에서 timings.duration을 출력한다. 이는 http_req_duration과 동일하며 요청에 대한 총 소요시간 이는 http_req_sending + http_req_waiting + http_req_receiving 으로 계산된다. 
 
 ```go
 k6 run script.js
@@ -164,6 +165,7 @@ k6 run script.js
 
 - 선택적으로 사용자 지정 메트릭에 대한 값에 태그를 지정할 수 있다. 
 - 테스트 결과를 분석할때 유용하다. 
+- waiting_time으로 지정된 메트릭은 트랜드 메트릭으로 통계 정보를 위와 같이 확인할 수 있다. 
 
 ## Metric types
 
@@ -292,3 +294,8 @@ k6 run script.js
 
 from: https://k6.io/docs/using-k6/metrics/
 
+## WRAP UP
+
+- 지금까지 기본적인 테스트 요청부터, 응답에서 성능을 확인할 수 있는 메트릭에 대해서 알아 보았다. 
+- 메트릭은 빌트인 메트릭과 커스텀 메트릭으로 나뉘어 진다. 
+- 메트릭은 Counter, Gauges, Rate, Trend 으로 나눠지며, 이 값을 이용하여 원하는 성능 지표를 확인할 수 있다. 
