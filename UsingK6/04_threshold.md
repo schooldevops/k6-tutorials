@@ -1,26 +1,26 @@
 # Thresholds
 
-- Threshold 는 pass/fail 조건으로 테스트 메트릭에 대한 정의를 할 수 있다. 
+- Threshold 는 pass/fail 조건으로 테스트 메트릭에 대한 검사를 수행하고 계속진행할지 종료할지 결정한다. 
 - 테스트 중인 시스템(SUT)의 성능 임계값 조건을 충족하지 않으면 테스트가 실패 상태로 종료된다. 
 
-- 종종 테스터는 임계값을 사용하여 SLO를 체계화 한다. 
+- 종종 테스터는 임계값을 사용하여 SLO(Service Level Objectives)를 체계화 한다. 
 - 예를 들어 다음 기대치를 조합하여 임계값을 생성할 수 있다. 
   - 요청에 대한 에러가 1% 미만인경우 
   - 요청의 95%의 응답이 200ms 이하인경우
   - 요청에 99%의 응답이 400ms 이하인경우 
   - 특정 엔드포인트가 항상 응답이 300ms 이하인경우
-  - 커스템 메트릭에 대한 컨디션 
+  - 커스템 메트릭에 대한 조건 검사
 
 - Threshold들은 로드 테스팅 자동화의 핵심이다. https://k6.io/docs/testing-guides/automated-performance-testing
 - 1. 테스트의 Threshold 를 준다. 
 - 2. 실행을 자동화 한다. 
 - 3. 테스트 실패에 대해 alert 를 설정한다. 
 
-- 그 후에는 SUT가 성능 기대치를 충족하지 못한 후에만 테스트에 대해 걱정해야한다. 
+- 그 후에는 SUT가 성능 기대치를 충족하지 못한 후에만 테스트에 대해 고민하고 시스템을 개선해야한다. 
 
-## Example: HTTP errors and response duration
+## 예:  HTTP errors and response duration
 
-- 이 샘플 스크립트는 2개 스레시홀드를 지정했다. 
+- 이 샘플 스크립트는 2개 Thresholds를 지정했다. 
 - 하나는 HTTP 에러에 대한 비율을 검증한다. (http_req_failed 메트릭이용)
 - 다른 하나는 특정 기간동안 응답의 95%가 발생했는지 검증한다. (http_req_duration 메트릭)
 
@@ -41,7 +41,7 @@ export default function () {
 ```
 
 - 즉, pass 조건에 대한 특정 표션식을 지정하면, 만약 금정 결과가 실패하였을때 k6는 전체 테스트를 실패로 간주한다. 
-- 테스트가 끝날때 해당 표현식이 false로 평가되면 k6는 전체 실패로 간주한다. 
+- 테스트가 끝날때 해당 조건식이 false로 평가되면 k6는 전체 실패로 간주한다. 
 - 이후 k6 출력은 다음과 같다. 
 
 ```go
@@ -52,17 +52,17 @@ export default function () {
 ```
 
 - 이 케이스에서, 두 임계값에 대한 기준을 충족했다.
-- k6는 테스트를 통과한 것으로 간주하고 종료 코드를 0으로 종료한다. 
+- k6는 테스트를 통과한 것으로 간주하고 실패값은 0으로 출력하며 종료한다. 
 
 - 만약 스레시 홀드가 실패했다면 녹색마크가 붉은색 x로 표시되고 0이아닌 종료 코드로 출력된다. 
 
 ## Copy-paste threshold 예제
 
-- Threshold 로 시작하는 가장 빠른 방법은 기본 제공되는 메트릭을 이용하는 것이다. 
+- Threshold 를 시작하는 가장 빠른 방법은 기본 제공되는 메트릭을 이용하는 것이다. 
 - https://k6.io/docs/using-k6/metrics#http-specific-built-in-metrics
 
 
-- 요청의 백분위수는 지정된 기간 내 완료된다. 
+- 아래는 요청 처리 시간이 400 이하인 요청이 90% 인지 검사하고 이를 넘어서는 경우 테스트를 종료한다. 
 
 ```js
 import http from 'k6/http';
@@ -101,7 +101,7 @@ export default function () {
 
 ```
 
-- 단일 메트릭에 대해서 복수 threshold 이다. 
+- 단일 메트릭에 대해서 복수 threshold 역시 가능하다. 
   - 하나의 메트릭에 대해 여러 임계값을 적용할 수도 있다.
   - 서로다른 백분위수 임계값을 가진다. 
 
@@ -126,7 +126,12 @@ export default function () {
 - 그룹 duration 스레시홀드 지정
   - 각 그룹에 스레시홀드를 지정할 수 있다. 
   - 이 코드에는 개별 요청 및 일괄 요청에 대한 그룹이 있다. 각 그룹에는 서로다른 임계값이 있다.
+  - 위 처리는 요청 결과로 90%가 400 이하로 응답했고, 95%가 800 이하로 응답했으며, 99.9 가 2000 이내에 응답했음을 체크한다. 
 
+<br/>
+
+- 아래 예제는 그룹별로 Threshold 를 검사한다.  
+  
 ```js
 import http from 'k6/http';
 import { group, sleep } from 'k6';
@@ -159,6 +164,11 @@ export default function () {
 }
 ```
 
+- 위 코드 결과는 individualRequests 요청 그룹에서 평균 응답시간이 400 이상인경우 테스트를 종료한다. 
+- 그리고 batchRequests 요청 그룹에서 평균 응답 시간이 200 이상인경우 테스트를 종료한다. 
+
+<br/>
+
 - Threshold 신택스
   - 임계값을 사용하려면 하나 이상의 threshold_expression을 정의해야한다.
 
@@ -190,7 +200,7 @@ export const options = {
 
 - threshold 표현식은 true/false 로 평가된다. 
 
-- k6dp 포함된 메트릭 타입의 각각은 임계값 표현식에서 사용할 수 있는 집계 방법 세트를 제공한다. 
+- k6에 포함된 메트릭 타입의 각각은 임계값 표현식에서 사용할 수 있는 집계 방법 세트를 제공한다. 
 
 |Metric type| Aggregation Methods|
 |---|---|
@@ -262,9 +272,9 @@ export const options = {
 - 마지막 하나만 남게 된다. 
 - 나머지는 조용히 무시된다. 대신 동일한 키에 대한 배열로 저장하면 된다. 
 
-## Thresholds on tags
+## 태그를 기준으로 threshold 검사하기
 
-- 단일  URL또는 특정 태그에 임계값을 지정하는 것이 종종 유용하다. 
+- 단일  URL또는 특정 태그에 임계값을 지정하는 것이 가끔 필요하다. 
 - k6에서 태그가 지정된 요청은 임계값에서 사용할 수 있는 하위 지표를 생성한다. 
 
 ```js
@@ -365,7 +375,7 @@ export default function () {
 
 ```
 
-- k6이 클라우드에서 실행될 때 임계값은 60초마다 평가된다. 
+- k6가 k6클라우드에서 실행될 때 임계값은 60초마다 평가된다. 
 - 따라서 abortOnFail 기능은 최대 60초까지 지연될 수 있다. 
 
 ## checks 를 이용하여 로드 테스트 실패하기
@@ -439,4 +449,13 @@ export default function () {
 ```
 
 from: https://k6.io/docs/using-k6/thresholds/
+
+## Wrap Up
+
+- 지금까지 check와 thresholds 를 알아보았다. 
+- check는 검증이 성공했는지 / 실패했는지를 검사하고, 실패했다고 해서 테스트가 바로 종료되지는 않는다. 
+- thresholds 는 검증을 성공하면 계속해서 테스트가 수행되며, 실패하면 테스트를 바로 종료한다. 
+- check와 thresholds를 함께 이용하여 검증을 수행할 수 있다. 
+- 또한 threshold 에서 실패인경우에도 계속해서 테스트할지 여부도 설정할 수 있다는 것을 알게 되었다. 
+  
 
