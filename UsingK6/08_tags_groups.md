@@ -1,17 +1,16 @@
 # Tags and Groups
 
-- 로그 테스트는 다른 하위 시스템과 리소스를 대상으로 한다. 
+- 부하 테스트는 다른 하위 시스템과 리소스를 대상으로 한다. 
 - 이로 인해 성능을 저하시키는 문제를 정확히 찾아내기 어려울 수 있다. 
 
-- k6는 2가지 스크립팅 API를 제공하여 가시성, 소트, 테스트 결과 필터링을 수행할 수 있게한다. 
+- k6는 2가지 스크립팅 API를 제공하여 가시성, 정렬, 테스트 결과 필터링을 수행할 수 있게한다. 
   - Tags: 
     - check, threshold, custom metrics, 심층 필터링 등을 위해서 분류를 할 수 있다. 
   - Groups:
     - 태그를 스크립트 함수에 적용한다. 
 
 - 이러한 미세한 태그 이외에도 옵션을 사용하여 테스트 전체 태그를 설정할 수 있다. 
-- 이러한 태글르 사용하여 여러 테스트의 결과를 비교할 수 있다. 
-- 추가적으로 결과를 필터링, 임계값 분석 작업을 제한할 수도 있다. 
+- 이러한 태그를 사용하여 여러 테스트를 구분하고 결과를 비교 할 수 있다. 
 
 ## Tags
 
@@ -22,7 +21,7 @@
 
 ## System tags
 
-- 현재 k6는 자동적으로 태그를 생성하고 있다. 
+- 현재 k6는 자동적으로 태그를 생성하고 있으며 이를 System 태그라고 한다. 
 
 |TAG|	DESCRIPTION|
 |---|---|
@@ -84,6 +83,51 @@ export default function () {
 }
 
 ```
+
+### 결과 
+
+```go
+$ k6 run 08_tag_group_01.js
+
+
+          /\      |‾‾| /‾‾/   /‾‾/   
+     /\  /  \     |  |/  /   /  /    
+    /  \/    \    |     (   /   ‾‾\  
+   /          \   |  |\  \ |  (‾)  | 
+  / __________ \  |__| \__\ \_____/ .io
+
+  execution: local
+     script: 08_tag_group_01.js
+     output: -
+
+  scenarios: (100.00%) 1 scenario, 1 max VUs, 10m30s max duration (incl. graceful stop):
+           * default: 1 iterations for each of 1 VUs (maxDuration: 10m0s, gracefulStop: 30s)
+
+
+running (00m01.0s), 0/1 VUs, 1 complete and 0 interrupted iterations
+default ✓ [======================================] 1 VUs  00m01.0s/10m0s  1/1 iters, 1 per VU
+
+     ✓ status is 200
+
+     checks.........................: 100.00% ✓ 1        ✗ 0
+     data_received..................: 16 kB   16 kB/s
+     data_sent......................: 575 B   584 B/s
+     http_req_blocked...............: avg=296.2ms  min=194.2ms  med=296.2ms  max=398.2ms  p(90)=377.8ms  p(95)=388ms   
+     http_req_connecting............: avg=191.42ms min=190.65ms med=191.42ms max=192.18ms p(90)=192.03ms p(95)=192.1ms 
+     http_req_duration..............: avg=194.53ms min=191.2ms  med=194.53ms max=197.85ms p(90)=197.19ms p(95)=197.52ms
+       { expected_response:true }...: avg=194.53ms min=191.2ms  med=194.53ms max=197.85ms p(90)=197.19ms p(95)=197.52ms
+     http_req_failed................: 0.00%   ✓ 0        ✗ 2
+     http_req_receiving.............: avg=148µs    min=138µs    med=148µs    max=158µs    p(90)=156µs    p(95)=157µs   
+     http_req_sending...............: avg=56µs     min=29µs     med=56µs     max=83µs     p(90)=77.6µs   p(95)=80.3µs  
+     http_req_tls_handshaking.......: avg=103.53ms min=0s       med=103.53ms max=207.07ms p(90)=186.36ms p(95)=196.72ms
+     http_req_waiting...............: avg=194.32ms min=190.98ms med=194.32ms max=197.67ms p(90)=197ms    p(95)=197.33ms
+     http_reqs......................: 2       2.030304/s
+     iteration_duration.............: avg=983.42ms min=983.42ms med=983.42ms max=983.42ms p(90)=983.42ms p(95)=983.42ms
+     iterations.....................: 1       1.015152/s
+     my_trend.......................: avg=190.659  min=190.659  med=190.659  max=190.659  p(90)=190.659  p(95)=190.659 
+```
+
+- 위에서 정의한 태그를 이용하여 결과를 검증하고, 커스텀 메트릭(my_trend)을 위한 기준으로 정의하고 있음을 알 수 있다. 
 
 ## 테스트 전반의 태그
 
@@ -148,6 +192,38 @@ export default function () {
 }
 ```
 
+### 실행결과 
+
+```go
+$ k6 run 08_tag_group_02.js
+
+          /\      |‾‾| /‾‾/   /‾‾/   
+     /\  /  \     |  |/  /   /  /    
+    /  \/    \    |     (   /   ‾‾\  
+   /          \   |  |\  \ |  (‾)  | 
+  / __________ \  |__| \__\ \_____/ .io
+
+  execution: local
+     script: 08_tag_group_02.js
+     output: -
+
+  scenarios: (100.00%) 1 scenario, 1 max VUs, 10m30s max duration (incl. graceful stop):
+           * default: 1 iterations for each of 1 VUs (maxDuration: 10m0s, gracefulStop: 30s)
+
+INFO[0000] default                                       source=console
+
+running (00m00.0s), 0/1 VUs, 1 complete and 0 interrupted iterations
+default ✓ [======================================] 1 VUs  00m00.0s/10m0s  1/1 iters, 1 per VU
+
+     data_received........: 0 B 0 B/s
+     data_sent............: 0 B 0 B/s
+     iteration_duration...: avg=96.45µs min=96.45µs med=96.45µs max=96.45µs p(90)=96.45µs p(95)=96.45µs
+     iterations...........: 1   1154.734411/s
+```
+
+- 태그를 변수로 입력 받아, 로그로 출력하고 있다. 
+- INFO[0000] default                                       source=console 가 출력된다. 
+
 ## Tagging stage
 
 - [k6-jslib-utils](https://k6.io/docs/javascript-api/jslib/utils) 프로젝트의 몇가지 헬퍼 함수들 덕분에 states 옵션을 지원한다. 
@@ -170,8 +246,8 @@ export const options = {
 export default function () {
   tagWithCurrentStageIndex();
 
-  // all the requests will have a `stage` tag
-  // with its value equal to the the index of the stage
+  // 모든 요청은 'stage' 태그를 가진다. 
+  // 이 값은 스테이지의 인덱스 값과 동일하다. 
   http.get('https://test.k6.io'); // e.g. {stage: "1"}
 }
 
@@ -191,8 +267,8 @@ export const options = {
 export default function () {
   tagWithCurrentStageProfile();
 
-  // all the requests are tagged with a `stage` tag
-  // with the index of the stage as value
+  // 모든 요청은 'stage' 태그를 가진다. 
+  // 이 값은 스테이지의 인덱스 값과 동일하다. 
   http.get('https://test.k6.io'); // {stage_profile: ramp-up}
 }
 
@@ -230,7 +306,7 @@ ramp-down,	현재 스테이지 목표가 이전 단계의 목표보다 적다.
 
 ## Groups 
 
-- 추가 구성을 위해서 groups 를 사용하여 기능별로 스트립트를 그룹화 할 수 있따. 
+- 추가 구성을 위해서 groups 를 사용하여 기능별로 스트립트를 그룹화 할 수 있다. 
 - BDD 스타일 테스트를 위해서 그룹을 중첩할 수 있다. 
 
 - 그룹에서 내보낸 모든 메트릭에는 ::(콜론 2개)로 구분된 모든 래핑 그룹 이름의 값이 있는 태그 그룹이 있다. 
@@ -293,7 +369,7 @@ group('list posts', function () {
 ```
 
 - 코드가 앞의 스니펫과 같으면 다음 전략을 고려하여 더 깔끔한 코드를 작성하라. 
-  - 동적 URL을 위해서 URL grouping 기능 이용 
+  - 동적 URL을 위해서 URL grouping 기능 이용 ('/posts/{$id}' 등으로 URL 그루핑)
   - 요청에 의미있는 이름을 지정하기 위해서 tags.name에 이름을 할당하라. 
   - 공통 논리를 재사용하거나 코드를 더 잘 구성하려면 함수에서 논리를 그룹화하거나 로컬 JavaScript 모듈을 만들고 테스트 스크립트로 가져온다.
   - 고급 사용자 패턴을 모델링하려면 시나리오를 확인하라. 
