@@ -15,7 +15,7 @@
 |iterations|	integer|	각 VU에 의해서 수행될 function 반복 수 |	1|
 |maxDuration|	string|	강제로 중지되기 전의 최대 시나리오 지속 시간 (gracefulStop제외)|	"10m"|
 
-## When to use
+## 언제 사용할까?
 
 - 동일한 양의 반복을 완료하기 위해 특정 양의 VU가 필요한 경우 이 실행기를 사용하라. 
 - 이는 VU간에 분할 하려는 고정 테스트 데이터 세트가 있는 경우에 유용하다. 
