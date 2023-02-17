@@ -270,16 +270,14 @@ default ✓ [======================================] 1 VUs  00m01.7s/10m0s  1/1 
 1. [vuser 이해](00.vuser_number.md)
 
 2. [요청보내기](01_http_requests.md)
-- Get/Post 등의 요청을 서버로 전송할 수 있다. 
-
-1. [Metrics 이해하기](02_metrics.md)
-2. Check와 Threshold
+3. [Metrics 이해하기](02_metrics.md)
+4. Check와 Threshold
    1. [Check](03_check.md)
    2. [Threshold](04_threshold.md)
-3. [Option 절](05_options.md)
-4. [Tag_groups](08_tags_groups.md)
-5. [Cookies](09_cookies.md)
-6. [환경변수](10_environment.md)
+5. [Option 절](05_options.md)
+6. [Tag_groups](08_tags_groups.md)
+7. [Cookies](09_cookies.md)
+8. [환경변수](10_environment.md)
 
 ### 시나리오 소개 
 
