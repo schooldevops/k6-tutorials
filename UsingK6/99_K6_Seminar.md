@@ -16,23 +16,24 @@
   - DB트랜잭션과는 다른 의미로, 논리적인 업무 요청의 단위를 트랜잭션이라고 한다. 
   - 사용자가 한번의 요청을 보내는 단위 요청
 - 총 사용자 (Total User)
-  - 현재 서비스 요청자 + 서비스 대기자 + 비접속자
+  - $현재 서비스 요청자 + 서비스 대기자 + 비접속자$
 - 현재 서비스 요청자 (Active User)
   - 현재 서비스에 요청을 보낸 상태에 있는 사용자
 - 서비스 대기자 (InActive User)
   - 서비스에 접속은 하고 있으나 아직 요청을 보내지 않은 사용자
 - 동시 사용자 (Concurrency User)
-  - Active User + InActive User
+  - $Active User + InActive User$
 - 처리량
   - 단위 시간당 컴포터에서 처리되는 양 (건수)
   - TPS(Transaction Per Second)
   - RPS(Request Per Second)
   - Throughtput(처리량)
 - 처리량계산
-  - Active User / 평균 응답시간 
-- Active User = 처리량 * 평균 응답시간 
+  - $치리량 = Active User / 평균 응답시간$
+- Active User
+  - $처리량 * 평균 응답시간$
 - Request Interval (요청주기)
-  - Response Time (응답시간) + Think time (생각 시간) + Operation time (조작 시간)
+  - $Response Time (응답시간) + Think time (생각 시간) + Operation time (조작 시간)$
 - 응답시간 (Response Time)
   - 사용자가 서버로 요청을 보내후 부터 응답이 오기까지 시간
 - 생각 시간 (Think Time)
@@ -66,7 +67,23 @@
   - 점검항목은 테스트 담당자가 수집할 수 있는 모든 항목을 점검한다. 
   - TPS, 응답시간(Latency), 시스템메트릭(CPU Util, Mem usage, Network Retransmission ...), 에러율, 네트워크 사용율,  LB부하발생 여부 등이 메트릭 지표가 될 것이다. 
 
+### 성능테스트 Graph
 
+![Throughput Curve](https://publib.boulder.ibm.com/httpserv/cookbook/images/inst_08tune_satpt.gif)
+
+from: https://publib.boulder.ibm.com/httpserv/cookbook/Cookbook_General-Theory.html
+
+- A: 사용자가 증가되는 지점 (RampUp) 
+  - 해당 지점동안 사용자가 늘면서 처리량도 함께 증가한다.
+- Saturation point: 임계지점(포화지점)
+  - 사용자가 증가해도 더이상 처리량은 증가되지 않는 상태가 된다. 
+  - 이 상태가 되면 현재 시스템이 처리할 수 있는 최대 Capacity 에 도달했음을 나타낸다. 
+- B: 최대 부하 지점
+  - 사용자가 증가해도 처리량이 일정하게 유지되는 지점이다. 
+  - 이때 그래프가 고르고 안정적이라면 서비스가 최대 Capacity로 유지될 수 있음을 나타낸다. 
+- C: Buckle 영역 (성능 감소지점)
+  - 최대 처리를 더이상 견더내지 못하고 성능이 감소되는 지점이다. 
+  - 이 시점은 시스템의 한계를 초과 했거나 네트워크 대역폭을 다 써버린 경우에 이런 현상이 발생한다.
 ### 성능테스트별 그래프
 
 - 성능테스트 방법에 따라 그래프 패턴을 확인할 수 있다. 
@@ -98,7 +115,6 @@
 ![soak-test](https://k6.io/docs/static/d0a41ac91b107891e1fe9ef45d410e5b/deb37/soak-test.png)
 
 
-
 ### 워크로드 모델링
 
 - 워크로드 모델링은 성능 테스트를 수행할 대상 워크로드를 나열하고, 이중 업무 중요도가 높은 순으로 가설을 설정하고 이에 따라 성능 테스트 대상을 설정하는 작업이다.
@@ -106,14 +122,14 @@
 
 |워크로드| Target TPS| User| Response Time(sec)| Think Time| TPS|
 |---|---|---|---|---|---|
-|WL1| 30| 150| 1| 4| 30|
-|WL2| 25| 125| 1| 4| 25|
-|WL3| 14| 70| 3| 2| 14||
-|WL4| 10| 50| 0.5| 4.5| 10|
-|WL5| 5| 25| 4| 1| 5|
-|WL6| 5| 25| 1| 4| 5|
-|WL7| 5| 25| 2| 3| 5|
-|WL8| 5| 25| 1| 4| 5|
+|메인화면| 30| 150| 1| 4| 30|
+|로그인| 25| 125| 1| 4| 25|
+|마이페이지| 14| 70| 3| 2| 14||
+|상품| 10| 50| 0.5| 4.5| 10|
+|주문| 5| 25| 4| 1| 5|
+|결제| 5| 25| 1| 4| 5|
+|혜택| 5| 25| 2| 3| 5|
+|주문내역| 5| 25| 1| 4| 5|
 |Total| 100| | | 100|
 
 - 위 워크로드는 8개의 어플리케이션을 나열하고있다. (실제 모든 워크로드는 이보다 더 많을 것이다. 여기서는 약 80% 정도의 워크로드만 나열하여 모델링 한다.)
@@ -249,20 +265,21 @@ default ✓ [======================================] 1 VUs  00m01.7s/10m0s  1/1 
 
 ### K6 기본 이해하기 
 
-1. [vuser 이해](00.vuser_number.md)
-2. [요청보내기](01_http_requests.md)
+0. [기본구조(Lifecycle)](06_test_lifecycle.md)
 
+1. [vuser 이해](00.vuser_number.md)
+
+2. [요청보내기](01_http_requests.md)
 - Get/Post 등의 요청을 서버로 전송할 수 있다. 
 
-3. [Metrics 이해하기](02_metrics.md)
-4. Check와 Threshold
+1. [Metrics 이해하기](02_metrics.md)
+2. Check와 Threshold
    1. [Check](03_check.md)
    2. [Threshold](04_threshold.md)
-5. [Option 절](05_options.md)
-6. [Lifecycle](06_test_lifecycle.md)
-7. [Tag_groups](08_tags_groups.md)
-8. [Cookies](09_cookies.md)
-9. [환경변수](10_environment.md)
+3. [Option 절](05_options.md)
+4. [Tag_groups](08_tags_groups.md)
+5. [Cookies](09_cookies.md)
+6. [환경변수](10_environment.md)
 
 ### 시나리오 소개 
 
