@@ -3,11 +3,24 @@
 ## 1. 성능 테스트 이해하기
 
 - 성능테스트란 특정 워크로드에서 소프트웨어의 응답시간, 안정성, 확장성, 가용성, 리소스 사용량등을 테스트 하여 고객에게 소프트웨어 가치를 최대로 전달할 수 있는지를 측정하는 행위이다. 
+
+--- 
+
 - 응답시간: 사용자의 요청으로 부터 결과를 반환하기 까지 시간
 - 안정성: 워크로드가 다양한 문제 상황에서도 일정한 쿼리티의 제품을 고객에게 제공할 수 있도록 안정적으로 운영되는지 여부
 - 확장성: 워크로드에 부하 혹은 시스템의 용량이 임계치에 도달한경우 시스템을 수직 혹은 수평으로 확장하여 일정한 서비스의 품질을 유지할 수 있는지 여부
 - 가용성: 물리적 장애, 어플리케이션의 부하등이 발생 했을때에도, 퀄리티를 유지하면서 고객에게 서비스를 제공하는지 여부
 
+## 성능 테스트를 수행으로 알게 되는것
+
+1. 예상 목표 TPS를 달성하는가?
+2. 피크 시간에서 원활하게 서비스 할 수 있는가?
+3. 오랜시간 서비스를 수행하더라도 자원의 누수 없이 서비스를 수행할 수 있는가?
+4. 사람이 더 많이 들어오는 경우 수평/수직 확장을 하기 위한 기준은 무엇인가?
+5. 일부 시스템이 다운되어도 서비스를 적절히 수행할 수 있는 최소 리소스 요건은 어떻게 되는가?
+6. 시스템 리소스가 오버 프로비저닝 되지 않았는가?
+7. 시스템 메트릭은 시스템을 잘 설명하고 있는가?
+  
 ### 성능 Test 이론
 
 ### 용어
@@ -15,6 +28,9 @@
 - Transaction (TX)
   - DB트랜잭션과는 다른 의미로, 논리적인 업무 요청의 단위를 트랜잭션이라고 한다. 
   - 사용자가 한번의 요청을 보내는 단위 요청
+
+---
+
 - 총 사용자 (Total User)
   - $현재 서비스 요청자 + 서비스 대기자 + 비접속자$
 - 현재 서비스 요청자 (Active User)
@@ -23,17 +39,20 @@
   - 서비스에 접속은 하고 있으나 아직 요청을 보내지 않은 사용자
 - 동시 사용자 (Concurrency User)
   - $Active User + InActive User$
+
+---
+
 - 처리량
   - 단위 시간당 컴포터에서 처리되는 양 (건수)
   - TPS(Transaction Per Second)
   - RPS(Request Per Second)
   - Throughtput(처리량)
 - 처리량계산
-  - $치리량 = Active User / 평균 응답시간$
+  - $처리량 = Active User / 평균 응답시간$
 - Active User
-  - $처리량 * 평균 응답시간$
+  - $Active = 처리량 * 평균 응답시간$
 - Request Interval (요청주기)
-  - $Response Time (응답시간) + Think time (생각 시간) + Operation time (조작 시간)$
+  - $Request Interval = Response Time (응답시간) + Think time (생각 시간) + Operation time (조작 시간)$
 - 응답시간 (Response Time)
   - 사용자가 서버로 요청을 보내후 부터 응답이 오기까지 시간
 - 생각 시간 (Think Time)
@@ -151,6 +170,14 @@ from: https://publib.boulder.ibm.com/httpserv/cookbook/Cookbook_General-Theory.h
   - 사용이 심플하고, UI, 복수개의 부하 생성기를 구성할 수 있다. 
   - Jython, Groovy 스크립트를 사용하여 부하테스트 시나리오를 작성할 수 있다. 
   - [참고 nGrinder](https://naver.github.io/ngrinder/)
+- JMeter:
+  - 100% 자바로 개발된 오픈소스 성능 테스트 도구
+  - 다양한 통신 프로토콜을 지원한다. 
+    - HTTP/HTTPS, SOAP/REST, FTP, DATABASE, LDAP, JMS, SMTP 등등
+    - IDE 도구를 이용한 화면기반 테스트 수행가능
+    - 풍부한 리포트 기능
+    - 멀티 쓰레딩 기반 성능 테스트 수행
+    - [참고 JMeter](https://jmeter.apache.org/) 
 - Gatling:
   - 오픈소스로 강력한 로드테스팅 솔루션이다. 
   - 지속적인 로드테스트릴 지원하고, 개발 파이프라인에 로드 테스트를 추가할 수 있다. 
@@ -298,6 +325,44 @@ default ✓ [======================================] 1 VUs  00m01.7s/10m0s  1/1 
 
 ### 시각화
 
+#### influxdb/Grafana Docker 실행 
+
+[philhawthorne컨테이너](https://hub.docker.com/r/philhawthorne/docker-influxdb-grafana)
+
+```go
+docker run -d \
+  --name docker-influxdb-grafana \
+  -p 3003:3003 \
+  -p 3004:8083 \
+  -p 8086:8086 \
+  -v /Users/1111489/Documents/80.DATAS/influxdb:/var/lib/influxdb \
+  -v /Users/1111489/Documents/80.DATAS/grafana:/var/lib/grafana \
+  philhawthorne/docker-influxdb-grafana:latest
+```
+
+#### k6 실행
+
+[K6 출력연동](https://k6.io/docs/get-started/results-output/)
+
+```go
+k6 run first_scripts.json --out json=result_k6.json --out influxdb=http://localhost:8086/k6
+```
+
+#### Grafana 연동 및 Dashboard
+
+- Grafana에서 DataSource를 선택한다. 
+  - HTTP
+    - URL: http://localhost:8086
+  - InfluxDB Details
+    - Database: k6
+
+- 대시보드 설정 (아래 경로 참조)
+  - 대시보드 ID를 복사하고, Grafana에서 import 한다. 
+
+[대시보드](https://grafana.com/grafana/dashboards/10660-k6-load-testing-results/?tab=revisions) 
+
+  
+
 ### K6 한계점 및 튜닝
 
 - k6는 단일 머신에서 1개의 프로세스로만 수행되는 단점이 있다. 
@@ -313,3 +378,81 @@ default ✓ [======================================] 1 VUs  00m01.7s/10m0s  1/1 
 - K6 에 대한 전반적인 기능에 대해서 살펴 보았고, 이를 실행하는 방법에 대해서 이해해 보았다. 
 - K6의 한계 그리고 최대한 장비의 이점을 활용한 로드 생성기 구성에 대해서 살펴 보았다. 
 - 시각화를 통해 좀더 쉬운 방법으로 결과를 파악하는 법도 알아 보았다. 
+
+### QnA
+
+- wjpark91 님
+  
+```json
+1. 거래 호출 간 사용자 Think Time 은 어떤 기준으로 설정하는지?
+
+2. Kube 환경에서 Pod Scale-out 테스트를 위해 특화된 기능이 있을지? (Scale-out 시 문제점 파악?)
+```
+
+- tkakcy159 님
+
+```json
+K6는 Grafana labs 에서 만든만큼 Grafana 생태계와의 시너지가 기대되는데요.
+
+1. 다른 부하테스트 도구들과 비교하여 어떤 장점이 있는지(그리고 Grafana 생태계의 타 시스템들과 어떤 시너지가 있는지?)
+
+https://testguild.com/load-testing-tools/ 
+
+- JMeter: 6k stars
+- Taurus: 1.7k stars
+- Locust: 15.7k stars
+- nGrinder: 1.3k stars 
+- gatling: 5.1k stars
+- k6: 11.7k stars
+- Tsung: 2.1k stars
+- Siege: 4k stars
+
+2. 부하 테스트 과정과 결과를 시각화할 수 있는지, 그 구성 과정이 간편한지가 궁금합니다!
+
+- nGrinder, jMeter 등은 부하 테스트 결과를 직접 UI로 확인 가능
+- k6는 influxDB, Grafana 등을 구성해야함 (간편함에서는 UI가 직접 있는 것이 편함, 하지만 K6는 커맨드라인으로 가능하므로 CI/CD 툴에서 최적화 가능)
+```
+
+- sboat123 님
+
+```json
+성능테스트 하면 인프라측면도 있고 네트웍 측면도 있고 어플이케이션 측면도 다 고려해야 하는데 이 모든
+측면에 대한 성능을 모두 측정 가능한지 궁금하고 또 사용이 얼마나 쉬운지 GUI기반으로 사용이 간편한지도 궁금합니다. 마지막으로 앱개발후 스트레스 테스트환경 구측하는데도 어려움이 많은 데 K6를 사용하면 이 부하테스트 환경도 쉽게 구축이 가능한지요 ?
+
+- 성능 테스트는 2가지 영역으로 나누어짐
+- 1. 부하 생성기
+  - k6는 부하 생성기로 부하를 생성하고, 응답으로 돌아오기 까지 시간을 측정
+  - 또한 요청후 정상/비정상 응답을 집계하여 보여주는 역할을 함
+- 2. 모니터링 
+  - 모니터링은 서버사이드에 존재하는 어플리케이션, 인프라에 대한 성능을 모니터링 하는 것
+  - 보통 이것은 모니터링 시스템을 자체 구축하거나, 오픈소스 모니터링 도구 설치, 유료 모니터링 도구 이용 하는 방법이 존재
+  - AWS를 이용한다면 Cloud Watch 등을 활용하여 인프라 모니터링을 수행
+  - IT회의의 경우 유료 소프트웨어 Datadog 등과 같은 도구를 사용하여 메트릭을 수집하고 모니터링 하게 됨 
+```
+
+- prussianck 님
+
+```json
+다른 경쟁사 대비 k6 점유율은 어느정도 이고, 점유율 성장세는 어떠한지 궁금합니다
+
+- 워낙 많은 성능 테스트 도구가 있어서 점유율은 확인하지 못하였음
+- 다만 github에 stars 를 바탕으로 인기를 확인할 수 있을듯
+
+https://testguild.com/load-testing-tools/ 
+
+- JMeter: 6k stars
+- Taurus: 1.7k stars
+- Locust: 15.7k stars
+- nGrinder: 1.3k stars 
+- gatling: 5.1k stars
+- k6: 11.7k stars
+- Tsung: 2.1k stars
+- Siege: 4k stars
+
+```
+
+- j4k010 님
+
+```json
+k6를 들어보긴 했는데 막상 도입해서 사용해보려고 하면 어떤식으로 사용해야될지 잘 모르겠습니다. 성능 테스트를 하는 다른 도구와 비교했을 때 장점은 무엇이있을까요?
+```
