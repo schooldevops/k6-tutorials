@@ -385,7 +385,7 @@ k6 run first_scripts.json --out json=result_k6.json --out influxdb=http://localh
 
 - wjpark91 님
   
-```json
+```go
 1. 거래 호출 간 사용자 Think Time 은 어떤 기준으로 설정하는지?
 
 2. Kube 환경에서 Pod Scale-out 테스트를 위해 특화된 기능이 있을지? (Scale-out 시 문제점 파악?)
@@ -393,7 +393,7 @@ k6 run first_scripts.json --out json=result_k6.json --out influxdb=http://localh
 
 - tkakcy159 님
 
-```json
+```go
 K6는 Grafana labs 에서 만든만큼 Grafana 생태계와의 시너지가 기대되는데요.
 
 1. 다른 부하테스트 도구들과 비교하여 어떤 장점이 있는지(그리고 Grafana 생태계의 타 시스템들과 어떤 시너지가 있는지?)
@@ -417,7 +417,7 @@ https://testguild.com/load-testing-tools/
 
 - sboat123 님
 
-```json
+```go
 성능테스트 하면 인프라측면도 있고 네트웍 측면도 있고 어플이케이션 측면도 다 고려해야 하는데 이 모든
 측면에 대한 성능을 모두 측정 가능한지 궁금하고 또 사용이 얼마나 쉬운지 GUI기반으로 사용이 간편한지도 궁금합니다. 마지막으로 앱개발후 스트레스 테스트환경 구측하는데도 어려움이 많은 데 K6를 사용하면 이 부하테스트 환경도 쉽게 구축이 가능한지요 ?
 
@@ -434,7 +434,7 @@ https://testguild.com/load-testing-tools/
 
 - prussianck 님
 
-```json
+```go
 다른 경쟁사 대비 k6 점유율은 어느정도 이고, 점유율 성장세는 어떠한지 궁금합니다
 
 - 워낙 많은 성능 테스트 도구가 있어서 점유율은 확인하지 못하였음
@@ -455,7 +455,7 @@ https://testguild.com/load-testing-tools/
 
 - j4k010 님
 
-```json
+```go
 k6를 들어보긴 했는데 막상 도입해서 사용해보려고 하면 어떤식으로 사용해야될지 잘 모르겠습니다. 성능 테스트를 하는 다른 도구와 비교했을 때 장점은 무엇이있을까요?
 
 - 시작은 k6를 사용하여 요청을 한번 보내보는 것으로 시작하기
