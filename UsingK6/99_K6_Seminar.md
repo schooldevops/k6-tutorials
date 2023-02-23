@@ -234,7 +234,7 @@ docker pull grafana/k6
 
 - first_scripts.json 파일을 다음과 같이 생성 
 
-```json
+```python
 import http from 'k6/http';
 import { sleep } from 'k6';
 
