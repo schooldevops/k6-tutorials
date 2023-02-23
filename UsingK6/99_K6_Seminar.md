@@ -43,7 +43,7 @@
 ---
 
 - 처리량
-  - 단위 시간당 컴포터에서 처리되는 양 (건수)
+  - 단위 시간당 처리되는 양 (건수)
   - TPS(Transaction Per Second)
   - RPS(Request Per Second)
   - Throughtput(처리량)
