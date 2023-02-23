@@ -50,7 +50,7 @@
 - 처리량계산
   - $처리량 = Active User / 평균 응답시간$
 - Active User
-  - $Active = 처리량 * 평균 응답시간$
+  - $Active User = 처리량 * 평균 응답시간$
 - Request Interval (요청주기)
   - $Request Interval = Response Time (응답시간) + Think time (생각 시간) + Operation time (조작 시간)$
 - 응답시간 (Response Time)
