@@ -20,6 +20,7 @@
 5. 일부 시스템이 다운되어도 서비스를 적절히 수행할 수 있는 최소 리소스 요건은 어떻게 되는가?
 6. 시스템 리소스가 오버 프로비저닝 되지 않았는가?
 7. 시스템 메트릭은 시스템을 잘 설명하고 있는가?
+8. 목표 달성을 위한 하드웨어/소프트웨어 어플리케이션 최적 설정값은 무엇인가?
   
 ### 성능 Test 이론
 
@@ -314,10 +315,11 @@ default ✓ [======================================] 1 VUs  00m01.7s/10m0s  1/1 
 1. [시나리오소개](11_00_senarios.md)
 2. [shared_iterator](11_01_executor_shared_iterator.md)
 3. [per_vu_iterations](11_02_per_vu_iterations.md)
-4. [constant_vus](11_03_constant_vus.md)
-5. [ramping_vus](11_04_ramping_vus.md)
-6. [constant_arrival_rate](11_05_constant_arrival_rate.md)
-7. [ramping_arrival_rate](11_06_raminpg_arrive_rate.md)
+4. [Open-Close Model](https://k6.io/docs/using-k6/scenarios/concepts/open-vs-closed/)
+5. [constant_vus](11_03_constant_vus.md)
+6. [ramping_vus](11_04_ramping_vus.md)
+7. [constant_arrival_rate](11_05_constant_arrival_rate.md)
+8. [ramping_arrival_rate](11_06_raminpg_arrive_rate.md)
 
 ### 워크로드 모델 적용하기 
 
@@ -455,4 +457,11 @@ https://testguild.com/load-testing-tools/
 
 ```json
 k6를 들어보긴 했는데 막상 도입해서 사용해보려고 하면 어떤식으로 사용해야될지 잘 모르겠습니다. 성능 테스트를 하는 다른 도구와 비교했을 때 장점은 무엇이있을까요?
+
+- 시작은 k6를 사용하여 요청을 한번 보내보는 것으로 시작하기
+- 이후 multi workload modeling 을 활용한 시나리오 설정하기
+- 워크로드에 따라 테스트 해보고, 서버가 어떻게 응답하는지 확인하기
+- 원하는 TPS가 나오는지 검사하고, 메트릭을 함께 보면서 병목 찾기
+- 병목을 각개 격파하면서 성능 조건 만족시키기
+- 처음 소개한 성능테스트로 얻을 수 있는것 리포트 하기
 ```
